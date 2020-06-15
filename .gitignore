@@ -1,0 +1,4 @@
+.terraform
+azurek8s
+runContainer.ps1
+init.sh
