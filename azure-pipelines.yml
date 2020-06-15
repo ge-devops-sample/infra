@@ -15,9 +15,8 @@ stages:
     - script: |
         # Exit when any command returns a failure status.
         set -e
- 
         # Initialize Terraform.
-        cd $(Build.SourcesDirectory)/terraform_k8s && terraform init -input=false -backend-config="backend.tfvars"
+        terraform init -input=false -backend-config="backend.tfvars"
         # Apply the Terraform plan.
         terraform apply -input=false -auto-approve
   
