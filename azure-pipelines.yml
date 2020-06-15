@@ -4,7 +4,6 @@ trigger:
 stages:
 - stage: 'Provision'
   displayName: 'Provision Azure Kubernetes Service'
-  dependsOn: Build
   jobs:
   - job: Provision
     displayName: 'Provision Azure Kubernetes Service'
