@@ -1,6 +1,10 @@
 variable "client_id" {}
 variable "client_secret" {}
 
+variable "resource_prefix" {
+    default = "micro-services"
+}
+
 variable "agent_count" {
     default = 2
 }
@@ -10,19 +14,19 @@ variable "ssh_public_key" {
 }
 
 variable "dns_prefix" {
-    default = "k8stest"
+    default = "k8s"
 }
 
 variable cluster_name {
-    default = "k8stest"
+    default = "k8s"
 }
 
 variable acr_name {
-    default = "acrtest"
+    default = "acr"
 }
 
 variable resource_group_name {
-    default = "azure-k8stest"
+    default = "micro-services-rg"
 }
 
 variable location {
@@ -30,7 +34,7 @@ variable location {
 }
 
 variable log_analytics_workspace_name {
-    default = "testLogAnalyticsWorkspaceName"
+    default = "LogAnalyticsWorkspaceName"
 }
 
 # refer https://azure.microsoft.com/global-infrastructure/services/?products=monitor for log analytics available regions

@@ -1,26 +1,26 @@
-resource "azurerm_resource_group" "k8s" {
+resource "azurerm_resource_group" "rg" {
     name     = var.resource_group_name
     location = var.location
 }
 
 resource "random_id" "suffix" {
-    byte_length = 8
+    byte_length = 2
 }
 
-resource "azurerm_log_analytics_workspace" "test" {
+resource "azurerm_log_analytics_workspace" "workspace" {
     # The WorkSpace name has to be unique across the whole of azure, not just the current subscription/tenant.
-    name                = "${var.log_analytics_workspace_name}-${random_id.suffix.dec}"
+    name                = "${var.log_analytics_workspace_name}-${random_id.suffix.hex}"
     location            = var.log_analytics_workspace_location
-    resource_group_name = azurerm_resource_group.k8s.name
+    resource_group_name = azurerm_resource_group.rg.name
     sku                 = var.log_analytics_workspace_sku
 }
 
-resource "azurerm_log_analytics_solution" "test" {
+resource "azurerm_log_analytics_solution" "solution" {
     solution_name         = "ContainerInsights"
-    location              = azurerm_log_analytics_workspace.test.location
-    resource_group_name   = azurerm_resource_group.k8s.name
-    workspace_resource_id = azurerm_log_analytics_workspace.test.id
-    workspace_name        = azurerm_log_analytics_workspace.test.name
+    location              = azurerm_log_analytics_workspace.workspace.location
+    resource_group_name   = azurerm_resource_group.rg.name
+    workspace_resource_id = azurerm_log_analytics_workspace.workspace.id
+    workspace_name        = azurerm_log_analytics_workspace.workspace.name
 
     plan {
         publisher = "Microsoft"
@@ -29,16 +29,19 @@ resource "azurerm_log_analytics_solution" "test" {
 }
 
 resource "azurerm_container_registry" "acr" {
-  name                     = "${var.acr_name}${random_id.suffix.dec}"
-  resource_group_name      = azurerm_resource_group.k8s.name
-  location                 = azurerm_resource_group.k8s.location
+  name                     = "${var.resource_prefix}${var.acr_name}${random_id.suffix.hex}"
+  resource_group_name      = azurerm_resource_group.rg.name
+  location                 = azurerm_resource_group.rg.location
   sku                      = "Standard"
+  tags = {
+        Environment = "Development"
+    }
 }
 
 resource "azurerm_kubernetes_cluster" "k8s" {
-    name                = "${var.cluster_name}-${random_id.suffix.dec}"
-    location            = azurerm_resource_group.k8s.location
-    resource_group_name = azurerm_resource_group.k8s.name
+    name                = "${var.resource_prefix}-${var.cluster_name}-${random_id.suffix.hex}"
+    location            = azurerm_resource_group.rg.location
+    resource_group_name = azurerm_resource_group.rg.name
     dns_prefix          = var.dns_prefix
 
     #linux_profile {
@@ -63,7 +66,7 @@ resource "azurerm_kubernetes_cluster" "k8s" {
     addon_profile {
         oms_agent {
         enabled                    = true
-        log_analytics_workspace_id = azurerm_log_analytics_workspace.test.id
+        log_analytics_workspace_id = azurerm_log_analytics_workspace.workspace.id
         }
     }
 
@@ -73,7 +76,7 @@ resource "azurerm_kubernetes_cluster" "k8s" {
 }
 
 #resource "azurerm_role_assignment" "example" {
-#  scope                = azurerm_container_registry.acr.id
-#  role_definition_name = "acrpull"
-#  principal_id         = azurerm_kubernetes_cluster.k8s.service_principal.0.client_id
+#    scope                = azurerm_container_registry.acr.id
+#    role_definition_name = "acrpull"
+#    principal_id         = azurerm_kubernetes_cluster.k8s.service_principal.0.client_id
 #}
