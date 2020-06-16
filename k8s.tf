@@ -29,7 +29,7 @@ resource "azurerm_log_analytics_solution" "solution" {
 }
 
 resource "azurerm_container_registry" "acr" {
-  name                     = "${var.resource_prefix}${var.acr_name}${random_id.suffix.hex}"
+  name                     = "${var.acr_name}${random_id.suffix.hex}"
   resource_group_name      = azurerm_resource_group.rg.name
   location                 = azurerm_resource_group.rg.location
   sku                      = "Standard"
