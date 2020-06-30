@@ -75,8 +75,8 @@ resource "azurerm_kubernetes_cluster" "k8s" {
     }
 }
 
-resource "azurerm_role_assignment" "example" {
+/*resource "azurerm_role_assignment" "example" {
     scope                = azurerm_container_registry.acr.id
     role_definition_name = "acrpull"
     principal_id         = azurerm_kubernetes_cluster.k8s.service_principal.0.client_id
-}
+}*/
