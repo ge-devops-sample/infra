@@ -2,7 +2,7 @@ variable "client_id" {}
 variable "client_secret" {}
 
 variable "resource_prefix" {
-    default = "micro-services"
+    default = "ge-ren-ga-devops-demo"
 }
 
 variable "agent_count" {
@@ -22,7 +22,7 @@ variable cluster_name {
 }
 
 variable acr_name {
-    default = "acr"
+    default = "gedevopsacrdemo"
 }
 
 variable resource_group_name {

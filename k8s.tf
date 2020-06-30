@@ -9,7 +9,7 @@ resource "random_id" "suffix" {
 
 resource "azurerm_log_analytics_workspace" "workspace" {
     # The WorkSpace name has to be unique across the whole of azure, not just the current subscription/tenant.
-    name                = "${var.log_analytics_workspace_name}-${random_id.suffix.hex}"
+    name                = "${var.resource_prefix}-${var.log_analytics_workspace_name}"
     location            = var.log_analytics_workspace_location
     resource_group_name = azurerm_resource_group.rg.name
     sku                 = var.log_analytics_workspace_sku
@@ -29,7 +29,7 @@ resource "azurerm_log_analytics_solution" "solution" {
 }
 
 resource "azurerm_container_registry" "acr" {
-  name                     = "${var.acr_name}${random_id.suffix.hex}"
+  name                     = "${var.acr_name}"
   resource_group_name      = azurerm_resource_group.rg.name
   location                 = azurerm_resource_group.rg.location
   sku                      = "Standard"
@@ -39,7 +39,7 @@ resource "azurerm_container_registry" "acr" {
 }
 
 resource "azurerm_kubernetes_cluster" "k8s" {
-    name                = "${var.resource_prefix}-${var.cluster_name}-${random_id.suffix.hex}"
+    name                = "${var.resource_prefix}-${var.cluster_name}"
     location            = azurerm_resource_group.rg.location
     resource_group_name = azurerm_resource_group.rg.name
     dns_prefix          = var.dns_prefix
@@ -75,8 +75,8 @@ resource "azurerm_kubernetes_cluster" "k8s" {
     }
 }
 
-#resource "azurerm_role_assignment" "example" {
-#    scope                = azurerm_container_registry.acr.id
-#    role_definition_name = "acrpull"
-#    principal_id         = azurerm_kubernetes_cluster.k8s.service_principal.0.client_id
-#}
+resource "azurerm_role_assignment" "example" {
+    scope                = azurerm_container_registry.acr.id
+    role_definition_name = "acrpull"
+    principal_id         = azurerm_kubernetes_cluster.k8s.service_principal.0.client_id
+}
